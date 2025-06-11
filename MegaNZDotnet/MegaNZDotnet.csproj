@@ -31,7 +31,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net80</TargetFrameworks>
     <RootNamespace>MegaNZDotnet</RootNamespace>
     <SignAssembly>False</SignAssembly>
     <DocumentationFile>bin\docs\MegaNZDotnet.xml</DocumentationFile>
