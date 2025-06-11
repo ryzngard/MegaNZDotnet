@@ -19,7 +19,7 @@ namespace CG.Web.MegaNZDotnet
     {
       if (!ServicePointManager.SecurityProtocol.HasFlag((SecurityProtocolType)3072))
       {
-        throw new NotSupportedException("mega.nz API requires support for TLS v1.2 or higher. Check https://gpailler.github.io/MegaApiClient/#compatibility for additional information");
+        throw new NotSupportedException("mega.nz API requires support for TLS v1.2 or higher. Check https://ryzngard.github.io/MegaNZDotnet/#compatibility for additional information");
       }
 
       BufferSize = Options.DefaultBufferSize;

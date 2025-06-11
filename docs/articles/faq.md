@@ -135,7 +135,7 @@ When creating the MegaNZDotnet, you can pass a custom configuration class called
 
 ### How can I fix UWP error during login ?
 UWP compiler has some restriction and you can face some unexpected exceptions during login.
-Take a look on [GitHub issue #69](https://github.com/gpailler/MegaNZDotnet/issues/69#issuecomment-326811805) for details.
+Take a look on [GitHub issue #69](https://github.com/ryzngard/MegaNZDotnet/issues/69#issuecomment-326811805) for details.
 
 
 ### How can I use this library when I have a proxy with authentication?

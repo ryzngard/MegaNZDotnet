@@ -23,4 +23,4 @@ All development/branches versions are released on MyGet.
 ### GitHub release
 NuGet published versions are also available on GitHub with changelog.
 
-[![GitHub](https://img.shields.io/github/downloads/gpailler/MegaNZDotnet/total.svg)](https://github.com/gpailler/MegaNZDotnet/releases)
+[![GitHub](https://img.shields.io/github/downloads/ryzngard/MegaNZDotnet/total.svg)](https://github.com/ryzngard/MegaNZDotnet/releases)

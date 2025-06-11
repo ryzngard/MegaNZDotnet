@@ -48,4 +48,4 @@ Here is the list of all supported implementations:
 ```
 ---
 
-MegaNZDotnet source is available on [GitHub](https://github.com/gpailler/MegaNZDotnet) and is released under [MIT](https://choosealicense.com/licenses/mit/) license.
+MegaNZDotnet source is available on [GitHub](https://github.com/ryzngard/MegaNZDotnet) and is released under [MIT](https://choosealicense.com/licenses/mit/) license.

@@ -26,12 +26,12 @@ namespace CG.Web.MegaNZDotnet
 #if NET47
       if (!ServicePointManager.SecurityProtocol.HasFlag(SecurityProtocolType.Tls12) && !ServicePointManager.SecurityProtocol.HasFlag(SecurityProtocolType.SystemDefault))
       {
-        throw new NotSupportedException("mega.nz API requires support for TLS v1.2 or higher. Check https://gpailler.github.io/MegaApiClient/#compatibility for additional information");
+        throw new NotSupportedException("mega.nz API requires support for TLS v1.2 or higher. Check https://ryzngard.github.io/MegaNZDotnet/#compatibility for additional information");
       }
 #elif NET45 || NET46
       if (!ServicePointManager.SecurityProtocol.HasFlag(SecurityProtocolType.Tls12))
       {
-        throw new NotSupportedException("mega.nz API requires support for TLS v1.2 or higher. Check https://gpailler.github.io/MegaApiClient/#compatibility for additional information");
+        throw new NotSupportedException("mega.nz API requires support for TLS v1.2 or higher. Check https://ryzngard.github.io/MegaNZDotnet/#compatibility for additional information");
       }
 #endif
 
