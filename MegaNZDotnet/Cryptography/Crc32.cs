@@ -11,24 +11,24 @@ using System.Security.Cryptography;
 
 namespace MegaNZDotnet.Cryptography;
 
-  /// <summary>
-  /// Implements a 32-bit CRC hash algorithm compatible with Zip etc.
-  /// </summary>
-  /// <remarks>
-  /// Crc32 should only be used for backward compatibility with older file formats
-  /// and algorithms. It is not secure enough for new applications.
-  /// If you need to call multiple times for the same data either use the HashAlgorithm
-  /// interface or remember that the result of one Compute call needs to be ~ (XOR) before
-  /// being passed in as the seed for the next Compute call.
-  /// </remarks>
-  public sealed class Crc32 : HashAlgorithm
-  {
-      public const uint DefaultPolynomial = 0xedb88320u;
-      public const uint DefaultSeed = 0xffffffffu;
+/// <summary>
+/// Implements a 32-bit CRC hash algorithm compatible with Zip etc.
+/// </summary>
+/// <remarks>
+/// Crc32 should only be used for backward compatibility with older file formats
+/// and algorithms. It is not secure enough for new applications.
+/// If you need to call multiple times for the same data either use the HashAlgorithm
+/// interface or remember that the result of one Compute call needs to be ~ (XOR) before
+/// being passed in as the seed for the next Compute call.
+/// </remarks>
+public sealed class Crc32 : HashAlgorithm
+{
+    public const uint DefaultPolynomial = 0xedb88320u;
+    public const uint DefaultSeed = 0xffffffffu;
 
-      static uint[] defaultTable;
+    static uint[] defaultTable;
 
-      static readonly ulong[] crc32TableLittleEndian = { 
+    static readonly ulong[] crc32TableLittleEndian = {
                                                        0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
    0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
    0xe0d5e91eL, 0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L,
@@ -83,8 +83,8 @@ namespace MegaNZDotnet.Cryptography;
    0x2d02ef8dL
                                                        };
 
-      static readonly ulong[] crc32tableBigEndian = { 
-                                                    
+    static readonly ulong[] crc32tableBigEndian = {
+
    0x00000000L, 0x96300777L, 0x2c610eeeL, 0xba510999L, 0x19c46d07L,
    0x8ff46a70L, 0x35a563e9L, 0xa395649eL, 0x3288db0eL, 0xa4b8dc79L,
    0x1ee9d5e0L, 0x88d9d297L, 0x2b4cb609L, 0xbd7cb17eL, 0x072db8e7L,
@@ -139,95 +139,95 @@ namespace MegaNZDotnet.Cryptography;
    0x8def022dL
                                                     };
 
-       /* Table of CRC-32's of all single byte values (made by makecrc.c) */
-      static readonly ulong[] crc32Table = BitConverter.IsLittleEndian ? crc32TableLittleEndian : crc32tableBigEndian;
+    /* Table of CRC-32's of all single byte values (made by makecrc.c) */
+    static readonly ulong[] crc32Table = BitConverter.IsLittleEndian ? crc32TableLittleEndian : crc32tableBigEndian;
 
-      readonly uint seed;
-      readonly uint[] table;
-  uint hash;
+    readonly uint seed;
+    readonly uint[] table;
+    uint hash;
 
-      public Crc32()
-          : this(DefaultPolynomial, DefaultSeed)
-      {
-      }
+    public Crc32()
+        : this(DefaultPolynomial, DefaultSeed)
+    {
+    }
 
-      public Crc32(uint polynomial, uint seed)
-      {
-          table = InitializeTable(polynomial);
-          this.seed = hash = seed;
-      }
+    public Crc32(uint polynomial, uint seed)
+    {
+        table = InitializeTable(polynomial);
+        this.seed = hash = seed;
+    }
 
-      public override void Initialize()
-      {
-          hash = seed;
-      }
+    public override void Initialize()
+    {
+        hash = seed;
+    }
 
-      protected override void HashCore(byte[] array, int ibStart, int cbSize)
-      {
-          
-          hash = CalculateHash(table, hash, array, ibStart, cbSize);
-      }
+    protected override void HashCore(byte[] array, int ibStart, int cbSize)
+    {
 
-      protected override byte[] HashFinal()
-      {
-          return UInt32ToBigEndianBytes(~hash);
-      }
+        hash = CalculateHash(table, hash, array, ibStart, cbSize);
+    }
 
-      public override int HashSize { get { return 32; } }
-      
-      public static uint Compute(byte[] buffer)
-      {
-          return Compute(DefaultSeed, buffer);
-      }
+    protected override byte[] HashFinal()
+    {
+        return UInt32ToBigEndianBytes(~hash);
+    }
 
-      public static uint Compute(uint seed, byte[] buffer)
-      {
-          return Compute(DefaultPolynomial, seed, buffer);
-      }
+    public override int HashSize { get { return 32; } }
 
-      public static uint Compute(uint polynomial, uint seed, byte[] buffer)
-      {
-          return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
-      }
+    public static uint Compute(byte[] buffer)
+    {
+        return Compute(DefaultSeed, buffer);
+    }
 
-      static uint[] InitializeTable(uint polynomial)
-      {
-          if (polynomial == DefaultPolynomial && defaultTable != null)
-              return defaultTable;
+    public static uint Compute(uint seed, byte[] buffer)
+    {
+        return Compute(DefaultPolynomial, seed, buffer);
+    }
 
-          var createTable = new uint[256];
-          for (var i = 0; i < 256; i++)
-          {
-              var entry = (uint)i;
-              for (var j = 0; j < 8; j++)
-                  if ((entry & 1) == 1)
-                      entry = entry >> 1 ^ polynomial;
-                  else
-                      entry = entry >> 1;
-              createTable[i] = entry;
-          }
+    public static uint Compute(uint polynomial, uint seed, byte[] buffer)
+    {
+        return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
+    }
 
-          if (polynomial == DefaultPolynomial)
-              defaultTable = createTable;
+    static uint[] InitializeTable(uint polynomial)
+    {
+        if (polynomial == DefaultPolynomial && defaultTable != null)
+            return defaultTable;
 
-          return createTable;
-      }
+        var createTable = new uint[256];
+        for (var i = 0; i < 256; i++)
+        {
+            var entry = (uint)i;
+            for (var j = 0; j < 8; j++)
+                if ((entry & 1) == 1)
+                    entry = entry >> 1 ^ polynomial;
+                else
+                    entry = entry >> 1;
+            createTable[i] = entry;
+        }
 
-      static uint CalculateHash(uint[] table, uint seed, IList<byte> buffer, int start, int size)
-      {
-          var hash = seed;
-          for (var i = start; i < start + size; i++)
-              hash = hash >> 8 ^ table[buffer[i] ^ hash & 0xff];
-          return hash;
-      }
+        if (polynomial == DefaultPolynomial)
+            defaultTable = createTable;
 
-      static byte[] UInt32ToBigEndianBytes(uint uint32)
-      {
-          var result = BitConverter.GetBytes(uint32);
+        return createTable;
+    }
 
-          if (BitConverter.IsLittleEndian)
-              Array.Reverse(result);
+    static uint CalculateHash(uint[] table, uint seed, IList<byte> buffer, int start, int size)
+    {
+        var hash = seed;
+        for (var i = start; i < start + size; i++)
+            hash = hash >> 8 ^ table[buffer[i] ^ hash & 0xff];
+        return hash;
+    }
 
-          return result;
-      }
-  }
+    static byte[] UInt32ToBigEndianBytes(uint uint32)
+    {
+        var result = BitConverter.GetBytes(uint32);
+
+        if (BitConverter.IsLittleEndian)
+            Array.Reverse(result);
+
+        return result;
+    }
+}

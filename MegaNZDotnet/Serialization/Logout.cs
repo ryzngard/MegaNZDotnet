@@ -2,8 +2,8 @@
 
 internal class LogoutRequest : RequestBase
 {
-  public LogoutRequest()
-    : base("sml")
-  {
-  }
+    public LogoutRequest()
+      : base("sml")
+    {
+    }
 }

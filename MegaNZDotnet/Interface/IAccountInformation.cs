@@ -4,20 +4,20 @@ using System.Collections.Generic;
 
 public interface IAccountInformation
 {
-  long TotalQuota { get; }
+    long TotalQuota { get; }
 
-  long UsedQuota { get; }
+    long UsedQuota { get; }
 
-  IEnumerable<IStorageMetrics> Metrics { get; }
+    IEnumerable<IStorageMetrics> Metrics { get; }
 }
 
 public interface IStorageMetrics
 {
-  string NodeId { get; }
+    string NodeId { get; }
 
-  long BytesUsed { get; }
+    long BytesUsed { get; }
 
-  long FilesCount { get; }
+    long FilesCount { get; }
 
-  long FoldersCount { get; }
+    long FoldersCount { get; }
 }

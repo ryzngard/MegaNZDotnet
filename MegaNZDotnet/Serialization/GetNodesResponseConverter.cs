@@ -1,5 +1,6 @@
 ﻿
 using System;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,44 +8,44 @@ namespace MegaNZDotnet.Serialization;
 
 internal class GetNodesResponseConverter : JsonConverter
 {
-  private readonly byte[] _masterKey;
+    private readonly byte[] _masterKey;
 
-  public GetNodesResponseConverter(byte[] masterKey)
-  {
-    _masterKey = masterKey;
-  }
-
-  public override bool CanConvert(Type objectType)
-  {
-    return typeof(GetNodesResponse) == objectType;
-  }
-
-  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-  {
-    if (reader.TokenType == JsonToken.Null)
+    public GetNodesResponseConverter(byte[] masterKey)
     {
-      return null;
+        _masterKey = masterKey;
     }
 
-    var jObject = JObject.Load(reader);
+    public override bool CanConvert(Type objectType)
+    {
+        return typeof(GetNodesResponse) == objectType;
+    }
 
-    var target = new GetNodesResponse(_masterKey);
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        if (reader.TokenType == JsonToken.Null)
+        {
+            return null;
+        }
 
-    var jObjectReader = jObject.CreateReader();
-    jObjectReader.Culture = reader.Culture;
-    jObjectReader.DateFormatString = reader.DateFormatString;
-    jObjectReader.DateParseHandling = reader.DateParseHandling;
-    jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
-    jObjectReader.FloatParseHandling = reader.FloatParseHandling;
-    jObjectReader.MaxDepth = reader.MaxDepth;
-    jObjectReader.SupportMultipleContent = reader.SupportMultipleContent;
-    serializer.Populate(jObjectReader, target);
+        var jObject = JObject.Load(reader);
 
-    return target;
-  }
+        var target = new GetNodesResponse(_masterKey);
 
-  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-  {
-    throw new NotSupportedException();
-  }
+        var jObjectReader = jObject.CreateReader();
+        jObjectReader.Culture = reader.Culture;
+        jObjectReader.DateFormatString = reader.DateFormatString;
+        jObjectReader.DateParseHandling = reader.DateParseHandling;
+        jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
+        jObjectReader.FloatParseHandling = reader.FloatParseHandling;
+        jObjectReader.MaxDepth = reader.MaxDepth;
+        jObjectReader.SupportMultipleContent = reader.SupportMultipleContent;
+        serializer.Populate(jObjectReader, target);
+
+        return target;
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        throw new NotSupportedException();
+    }
 }

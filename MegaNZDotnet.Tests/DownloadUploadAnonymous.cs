@@ -1,4 +1,5 @@
 ﻿using MegaNZDotnet.Tests.Context;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,8 +11,8 @@ public class DownloadUploadAnonymousTestsCollection : ICollectionFixture<Anonymo
 [Collection(nameof(DownloadUploadAnonymous))]
 public class DownloadUploadAnonymous : DownloadUpload
 {
-  public DownloadUploadAnonymous(AnonymousTestContext context, ITestOutputHelper testOutputHelper)
-    : base(context, testOutputHelper)
-  {
-  }
+    public DownloadUploadAnonymous(AnonymousTestContext context, ITestOutputHelper testOutputHelper)
+      : base(context, testOutputHelper)
+    {
+    }
 }

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using MegaNZDotnet;
 using MegaNZDotnet.Interface;
 using MegaNZDotnet.Tests.Context;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,74 +14,74 @@ namespace MegaNZDotnet.Tests;
 
 public abstract class TestsBase : IDisposable
 {
-  protected readonly ITestContext Context;
+    protected readonly ITestContext Context;
 
-  protected TestsBase(ITestContext context, ITestOutputHelper testOutputHelper)
-  {
-    Context = context;
-    Context.SetLogger(testOutputHelper);
-
-    if (Context.Client.IsLoggedIn)
+    protected TestsBase(ITestContext context, ITestOutputHelper testOutputHelper)
     {
-      SanitizeStorage();
-    }
-  }
+        Context = context;
+        Context.SetLogger(testOutputHelper);
 
-  public virtual void Dispose()
-  {
-    Context.ClearLogger();
-  }
-
-  protected INode GetNode(NodeType nodeType)
-  {
-    var node = Context.Client.GetNodes().SingleOrDefault(x => x.Type == nodeType);
-    Assert.NotNull(node);
-
-    return node;
-  }
-
-  protected INode GetNode(string nodeId)
-  {
-    var node = Context.Client.GetNodes().Single(x => x.Id == nodeId);
-    Assert.NotNull(node);
-
-    return node;
-  }
-
-  protected INode CreateFolderNode(INode parentNode, string name = "NodeName")
-  {
-    return Context.Client.CreateFolder(name, parentNode);
-  }
-
-  protected void SanitizeStorage(IEnumerable<string> protectedNodes = null)
-  {
-    IEnumerable<INode> nodes = Context.Client.GetNodes().ToArray();
-
-    var nodesToRemove = nodes.Where(x => IsProtectedNode(protectedNodes ?? Context.ProtectedNodes, x) == false);
-    foreach (var node in nodesToRemove)
-    {
-      try
-      {
-        Context.Client.Delete(node, false);
-      }
-      catch (ApiException ex)
-      {
-        // Don't throw if node is already removed
-        if (ex.ApiResultCode != ApiResultCode.AccessDenied)
+        if (Context.Client.IsLoggedIn)
         {
-          throw;
+            SanitizeStorage();
         }
-      }
     }
 
-    Assert.Equal((protectedNodes ?? Context.ProtectedNodes).Count(), Context.Client.GetNodes().Count());
-  }
+    public virtual void Dispose()
+    {
+        Context.ClearLogger();
+    }
 
-  private static bool IsProtectedNode(IEnumerable<string> protectedNodes, INode node)
-  {
-    return node.Type == NodeType.Inbox
-      || node.Type == NodeType.Root
-      || node.Type == NodeType.Trash
-      || protectedNodes.Any(x => x == node.Id);
-  }
+    protected INode GetNode(NodeType nodeType)
+    {
+        var node = Context.Client.GetNodes().SingleOrDefault(x => x.Type == nodeType);
+        Assert.NotNull(node);
+
+        return node;
+    }
+
+    protected INode GetNode(string nodeId)
+    {
+        var node = Context.Client.GetNodes().Single(x => x.Id == nodeId);
+        Assert.NotNull(node);
+
+        return node;
+    }
+
+    protected INode CreateFolderNode(INode parentNode, string name = "NodeName")
+    {
+        return Context.Client.CreateFolder(name, parentNode);
+    }
+
+    protected void SanitizeStorage(IEnumerable<string> protectedNodes = null)
+    {
+        IEnumerable<INode> nodes = Context.Client.GetNodes().ToArray();
+
+        var nodesToRemove = nodes.Where(x => IsProtectedNode(protectedNodes ?? Context.ProtectedNodes, x) == false);
+        foreach (var node in nodesToRemove)
+        {
+            try
+            {
+                Context.Client.Delete(node, false);
+            }
+            catch (ApiException ex)
+            {
+                // Don't throw if node is already removed
+                if (ex.ApiResultCode != ApiResultCode.AccessDenied)
+                {
+                    throw;
+                }
+            }
+        }
+
+        Assert.Equal((protectedNodes ?? Context.ProtectedNodes).Count(), Context.Client.GetNodes().Count());
+    }
+
+    private static bool IsProtectedNode(IEnumerable<string> protectedNodes, INode node)
+    {
+        return node.Type == NodeType.Inbox
+          || node.Type == NodeType.Root
+          || node.Type == NodeType.Trash
+          || protectedNodes.Any(x => x == node.Id);
+    }
 }

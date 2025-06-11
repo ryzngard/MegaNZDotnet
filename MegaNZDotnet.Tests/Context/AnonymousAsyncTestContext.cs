@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Xunit;
 
 namespace MegaNZDotnet.Tests.Context;
@@ -8,13 +9,13 @@ public class AnonymousLoginAsyncTestsCollection : ICollectionFixture<AnonymousAs
 
 public class AnonymousAsyncTestContext : AnonymousTestContext, IDisposable
 {
-  public void Dispose()
-  {
-    ((MegaApiClientAsyncWrapper)Client).Dispose();
-  }
+    public void Dispose()
+    {
+        ((MegaApiClientAsyncWrapper)Client).Dispose();
+    }
 
-  protected override IMegaApiClient CreateClient()
-  {
-    return new MegaApiClientAsyncWrapper(base.CreateClient());
-  }
+    protected override IMegaApiClient CreateClient()
+    {
+        return new MegaApiClientAsyncWrapper(base.CreateClient());
+    }
 }

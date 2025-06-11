@@ -2,82 +2,84 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Xunit.Abstractions;
+
 using MegaNZDotnet.Interface;
+
+using Xunit.Abstractions;
 
 namespace MegaNZDotnet.Tests.Context;
 
 public abstract class TestContext : ITestContext
 {
-  public const int WebTimeout = 60000;
+    public const int WebTimeout = 60000;
 
-  private const int MaxRetry = 3;
+    private const int MaxRetry = 3;
 
-  private readonly Lazy<IMegaApiClient> _lazyClient;
-  private readonly Lazy<IEnumerable<string>> _lazyProtectedNodes;
-  private readonly Lazy<IEnumerable<string>> _lazyPermanentNodes;
-  private readonly Action<string> _logMessageAction;
-  private ITestOutputHelper _testOutputHelper;
+    private readonly Lazy<IMegaApiClient> _lazyClient;
+    private readonly Lazy<IEnumerable<string>> _lazyProtectedNodes;
+    private readonly Lazy<IEnumerable<string>> _lazyPermanentNodes;
+    private readonly Action<string> _logMessageAction;
+    private ITestOutputHelper _testOutputHelper;
 
-  protected TestContext()
-  {
-    _lazyClient = new Lazy<IMegaApiClient>(InitializeClient);
-    _lazyProtectedNodes = new Lazy<IEnumerable<string>>(() => GetProtectedNodes().ToArray());
-    _lazyPermanentNodes = new Lazy<IEnumerable<string>>(() => GetPermanentNodes().ToArray());
-    _logMessageAction = x =>
+    protected TestContext()
     {
-      Debug.WriteLine(x);
-      _testOutputHelper?.WriteLine(x);
-    };
-  }
+        _lazyClient = new Lazy<IMegaApiClient>(InitializeClient);
+        _lazyProtectedNodes = new Lazy<IEnumerable<string>>(() => GetProtectedNodes().ToArray());
+        _lazyPermanentNodes = new Lazy<IEnumerable<string>>(() => GetPermanentNodes().ToArray());
+        _logMessageAction = x =>
+        {
+            Debug.WriteLine(x);
+            _testOutputHelper?.WriteLine(x);
+        };
+    }
 
-  public IMegaApiClient Client => _lazyClient.Value;
+    public IMegaApiClient Client => _lazyClient.Value;
 
-  public IWebClient WebClient { get; private set; }
+    public IWebClient WebClient { get; private set; }
 
-  public Options Options { get; private set; }
+    public Options Options { get; private set; }
 
-  public IEnumerable<string> ProtectedNodes => _lazyProtectedNodes.Value;
+    public IEnumerable<string> ProtectedNodes => _lazyProtectedNodes.Value;
 
-  public IEnumerable<string> PermanentRootNodes => _lazyPermanentNodes.Value;
+    public IEnumerable<string> PermanentRootNodes => _lazyPermanentNodes.Value;
 
-  public void SetLogger(ITestOutputHelper testOutputHelper)
-  {
-    _testOutputHelper = testOutputHelper;
-  }
+    public void SetLogger(ITestOutputHelper testOutputHelper)
+    {
+        _testOutputHelper = testOutputHelper;
+    }
 
-  public void ClearLogger()
-  {
-    _testOutputHelper = null;
-  }
+    public void ClearLogger()
+    {
+        _testOutputHelper = null;
+    }
 
-  protected virtual IMegaApiClient CreateClient()
-  {
-    Options = new Options(applicationKey: "ewZQFBBC");
-    WebClient = new TestWebClient(MaxRetry, _logMessageAction);
+    protected virtual IMegaApiClient CreateClient()
+    {
+        Options = new Options(applicationKey: "ewZQFBBC");
+        WebClient = new TestWebClient(MaxRetry, _logMessageAction);
 
-    return new MegaApiClient(Options, WebClient);
-  }
+        return new MegaApiClient(Options, WebClient);
+    }
 
-  protected abstract IEnumerable<string> GetProtectedNodes();
+    protected abstract IEnumerable<string> GetProtectedNodes();
 
-  protected abstract IEnumerable<string> GetPermanentNodes();
+    protected abstract IEnumerable<string> GetPermanentNodes();
 
-  protected abstract void ConnectClient(IMegaApiClient client);
+    protected abstract void ConnectClient(IMegaApiClient client);
 
-  private IMegaApiClient InitializeClient()
-  {
-    var client = CreateClient();
-    client.ApiRequestFailed += OnApiRequestFailed;
-    ConnectClient(client);
+    private IMegaApiClient InitializeClient()
+    {
+        var client = CreateClient();
+        client.ApiRequestFailed += OnApiRequestFailed;
+        ConnectClient(client);
 
-    _logMessageAction($"Client created for context {GetType().Name}");
+        _logMessageAction($"Client created for context {GetType().Name}");
 
-    return client;
-  }
+        return client;
+    }
 
-  private void OnApiRequestFailed(object _, ApiRequestFailedEventArgs e)
-  {
-    _logMessageAction($"ApiRequestFailed: {e.ApiResult}, {e.ApiUrl}, {e.AttemptNum}, {e.RetryDelay}, {e.ResponseJson}, {e.Exception} {e.Exception?.Message}");
-  }
+    private void OnApiRequestFailed(object _, ApiRequestFailedEventArgs e)
+    {
+        _logMessageAction($"ApiRequestFailed: {e.ApiResult}, {e.ApiUrl}, {e.AttemptNum}, {e.RetryDelay}, {e.ResponseJson}, {e.Exception} {e.Exception?.Message}");
+    }
 }

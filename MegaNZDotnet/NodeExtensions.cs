@@ -3,71 +3,72 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using MegaNZDotnet.Interface;
 
 namespace MegaNZDotnet;
 
 public static class NodeExtensions
 {
-  public static long GetFolderSize(this INode node, IMegaApiClient client)
-  {
-    var allNodes = client.GetNodes();
-    return node.GetFolderSize(allNodes);
-  }
-
-  public static long GetFolderSize(this INode node, IEnumerable<INode> allNodes)
-  {
-    if (node.Type == NodeType.File)
+    public static long GetFolderSize(this INode node, IMegaApiClient client)
     {
-      throw new InvalidOperationException("node is not a Directory");
+        var allNodes = client.GetNodes();
+        return node.GetFolderSize(allNodes);
     }
 
-    long folderSize = 0;
-    var children = allNodes.Where(x => x.ParentId == node.Id);
-    foreach (var childNode in children)
+    public static long GetFolderSize(this INode node, IEnumerable<INode> allNodes)
     {
-      if (childNode.Type == NodeType.File)
-      {
-        folderSize += childNode.Size;
-      }
-      else if (childNode.Type == NodeType.Directory)
-      {
-        var size = childNode.GetFolderSize(allNodes);
-        folderSize += size;
-      }
+        if (node.Type == NodeType.File)
+        {
+            throw new InvalidOperationException("node is not a Directory");
+        }
+
+        long folderSize = 0;
+        var children = allNodes.Where(x => x.ParentId == node.Id);
+        foreach (var childNode in children)
+        {
+            if (childNode.Type == NodeType.File)
+            {
+                folderSize += childNode.Size;
+            }
+            else if (childNode.Type == NodeType.Directory)
+            {
+                var size = childNode.GetFolderSize(allNodes);
+                folderSize += size;
+            }
+        }
+
+        return folderSize;
     }
 
-    return folderSize;
-  }
-
-  public static async Task<long> GetFolderSizeAsync(this INode node, IMegaApiClient client)
-  {
-    var allNodes = await client.GetNodesAsync();
-    return await node.GetFolderSizeAsync(allNodes);
-  }
-
-  public static async Task<long> GetFolderSizeAsync(this INode node, IEnumerable<INode> allNodes)
-  {
-    if (node.Type == NodeType.File)
+    public static async Task<long> GetFolderSizeAsync(this INode node, IMegaApiClient client)
     {
-      throw new InvalidOperationException("node is not a Directory");
+        var allNodes = await client.GetNodesAsync();
+        return await node.GetFolderSizeAsync(allNodes);
     }
 
-    long folderSize = 0;
-    var children = allNodes.Where(x => x.ParentId == node.Id);
-    foreach (var childNode in children)
+    public static async Task<long> GetFolderSizeAsync(this INode node, IEnumerable<INode> allNodes)
     {
-      if (childNode.Type == NodeType.File)
-      {
-        folderSize += childNode.Size;
-      }
-      else if (childNode.Type == NodeType.Directory)
-      {
-        var size = await childNode.GetFolderSizeAsync(allNodes);
-        folderSize += size;
-      }
-    }
+        if (node.Type == NodeType.File)
+        {
+            throw new InvalidOperationException("node is not a Directory");
+        }
 
-    return folderSize;
-  }
+        long folderSize = 0;
+        var children = allNodes.Where(x => x.ParentId == node.Id);
+        foreach (var childNode in children)
+        {
+            if (childNode.Type == NodeType.File)
+            {
+                folderSize += childNode.Size;
+            }
+            else if (childNode.Type == NodeType.Directory)
+            {
+                var size = await childNode.GetFolderSizeAsync(allNodes);
+                folderSize += size;
+            }
+        }
+
+        return folderSize;
+    }
 }
