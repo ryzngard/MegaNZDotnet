@@ -1,31 +1,30 @@
-namespace CG.Web.MegaNZDotnet
+﻿namespace MegaNZDotnet.Interface;
+
+using System;
+using System.Net;
+
+public interface ISession
 {
-  using System;
-  using System.Net;
+  string Client { get; }
 
-  public interface ISession
-  {
-    string Client { get; }
+  IPAddress IpAddress { get; }
 
-    IPAddress IpAddress { get; }
+  string Country { get; }
 
-    string Country { get; }
+  DateTime LoginTime { get; }
 
-    DateTime LoginTime { get; }
+  DateTime LastSeenTime { get; }
 
-    DateTime LastSeenTime { get; }
+  SessionStatus Status { get; }
 
-    SessionStatus Status { get; }
+  string SessionId { get; }
+}
 
-    string SessionId { get; }
-  }
-
-  [Flags]
-  public enum SessionStatus
-  {
-    Undefined = 0,
-    Current = 1 << 0,
-    Active = 1 << 1,
-    Expired = 1 << 2
-  }
+[Flags]
+public enum SessionStatus
+{
+  Undefined = 0,
+  Current = 1 << 0,
+  Active = 1 << 1,
+  Expired = 1 << 2
 }

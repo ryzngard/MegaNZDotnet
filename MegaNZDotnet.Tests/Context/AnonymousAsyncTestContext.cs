@@ -1,21 +1,20 @@
-using System;
+﻿using System;
 using Xunit;
 
-namespace CG.Web.MegaNZDotnet.Tests.Context
+namespace MegaNZDotnet.Tests.Context;
+
+[CollectionDefinition(nameof(AnonymousAsyncTestContext))]
+public class AnonymousLoginAsyncTestsCollection : ICollectionFixture<AnonymousAsyncTestContext> { }
+
+public class AnonymousAsyncTestContext : AnonymousTestContext, IDisposable
 {
-  [CollectionDefinition(nameof(AnonymousAsyncTestContext))]
-  public class AnonymousLoginAsyncTestsCollection : ICollectionFixture<AnonymousAsyncTestContext> { }
-
-  public class AnonymousAsyncTestContext : AnonymousTestContext, IDisposable
+  public void Dispose()
   {
-    public void Dispose()
-    {
-      ((MegaApiClientAsyncWrapper)Client).Dispose();
-    }
+    ((MegaApiClientAsyncWrapper)Client).Dispose();
+  }
 
-    protected override IMegaApiClient CreateClient()
-    {
-      return new MegaApiClientAsyncWrapper(base.CreateClient());
-    }
+  protected override IMegaApiClient CreateClient()
+  {
+    return new MegaApiClientAsyncWrapper(base.CreateClient());
   }
 }

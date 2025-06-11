@@ -1,46 +1,46 @@
-namespace CG.Web.MegaNZDotnet.Serialization
+﻿
+using Newtonsoft.Json;
+
+namespace MegaNZDotnet.Serialization;
+
+internal class LoginRequest : RequestBase
 {
-  using Newtonsoft.Json;
-
-  internal class LoginRequest : RequestBase
+  public LoginRequest(string userHandle, string passwordHash)
+    : base("us")
   {
-    public LoginRequest(string userHandle, string passwordHash)
-      : base("us")
-    {
-      UserHandle = userHandle;
-      PasswordHash = passwordHash;
-    }
-
-    public LoginRequest(string userHandle, string passwordHash, string mfaKey)
-      : base("us")
-    {
-      UserHandle = userHandle;
-      PasswordHash = passwordHash;
-      MFAKey = mfaKey;
-    }
-
-    [JsonProperty("user")]
-    public string UserHandle { get; private set; }
-
-    [JsonProperty("uh")]
-    public string PasswordHash { get; private set; }
-
-    [JsonProperty("mfa")]
-    public string MFAKey { get; private set; }
+    UserHandle = userHandle;
+    PasswordHash = passwordHash;
   }
 
-  internal class LoginResponse
+  public LoginRequest(string userHandle, string passwordHash, string mfaKey)
+    : base("us")
   {
-    [JsonProperty("csid")]
-    public string SessionId { get; private set; }
-
-    [JsonProperty("tsid")]
-    public string TemporarySessionId { get; private set; }
-
-    [JsonProperty("privk")]
-    public string PrivateKey { get; private set; }
-
-    [JsonProperty("k")]
-    public string MasterKey { get; private set; }
+    UserHandle = userHandle;
+    PasswordHash = passwordHash;
+    MFAKey = mfaKey;
   }
+
+  [JsonProperty("user")]
+  public string UserHandle { get; private set; }
+
+  [JsonProperty("uh")]
+  public string PasswordHash { get; private set; }
+
+  [JsonProperty("mfa")]
+  public string MFAKey { get; private set; }
+}
+
+internal class LoginResponse
+{
+  [JsonProperty("csid")]
+  public string SessionId { get; private set; }
+
+  [JsonProperty("tsid")]
+  public string TemporarySessionId { get; private set; }
+
+  [JsonProperty("privk")]
+  public string PrivateKey { get; private set; }
+
+  [JsonProperty("k")]
+  public string MasterKey { get; private set; }
 }

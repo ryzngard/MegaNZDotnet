@@ -1,22 +1,22 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MegaNZDotnet.Interface;
 using Xunit.Abstractions;
 
-namespace CG.Web.MegaNZDotnet.Tests.Context
+namespace MegaNZDotnet.Tests.Context;
+
+public interface ITestContext
 {
-  public interface ITestContext
-  {
-    IMegaApiClient Client { get; }
+  IMegaApiClient Client { get; }
 
-    IWebClient WebClient { get; }
+  IWebClient WebClient { get; }
 
-    Options Options { get; }
+  Options Options { get; }
 
-    IEnumerable<string> ProtectedNodes { get; }
+  IEnumerable<string> ProtectedNodes { get; }
 
-    IEnumerable<string> PermanentRootNodes { get; }
+  IEnumerable<string> PermanentRootNodes { get; }
 
-    void SetLogger(ITestOutputHelper testOutputHelper);
+  void SetLogger(ITestOutputHelper testOutputHelper);
 
-    void ClearLogger();
-  }
+  void ClearLogger();
 }

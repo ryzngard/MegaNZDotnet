@@ -1,16 +1,17 @@
-namespace CG.Web.MegaNZDotnet.Serialization
+﻿
+using MegaNZDotnet.Interface;
+using Newtonsoft.Json;
+
+namespace MegaNZDotnet.Serialization;
+
+internal class GetDownloadLinkRequest : RequestBase
 {
-  using Newtonsoft.Json;
-
-  internal class GetDownloadLinkRequest : RequestBase
+  public GetDownloadLinkRequest(INode node)
+    : base("l")
   {
-    public GetDownloadLinkRequest(INode node)
-      : base("l")
-    {
-      Id = node.Id;
-    }
-
-    [JsonProperty("n")]
-    public string Id { get; private set; }
+    Id = node.Id;
   }
+
+  [JsonProperty("n")]
+  public string Id { get; private set; }
 }

@@ -1,18 +1,17 @@
-namespace CG.Web.MegaNZDotnet
+﻿namespace MegaNZDotnet.Interface;
+
+using System;
+using System.IO;
+
+public interface IWebClient
 {
-  using System;
-  using System.IO;
+  int BufferSize { get; set; }
 
-  public interface IWebClient
-  {
-    int BufferSize { get; set; }
+  string PostRequestJson(Uri url, string jsonData);
 
-    string PostRequestJson(Uri url, string jsonData);
+  string PostRequestRaw(Uri url, Stream dataStream);
 
-    string PostRequestRaw(Uri url, Stream dataStream);
+  Stream PostRequestRawAsStream(Uri url, Stream dataStream);
 
-    Stream PostRequestRawAsStream(Uri url, Stream dataStream);
-
-    Stream GetRequestRaw(Uri url);
-  }
+  Stream GetRequestRaw(Uri url);
 }

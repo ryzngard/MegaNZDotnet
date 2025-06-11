@@ -1,18 +1,17 @@
-using CG.Web.MegaNZDotnet.Tests.Context;
+﻿using MegaNZDotnet.Tests.Context;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CG.Web.MegaNZDotnet.Tests
-{
-  [CollectionDefinition(nameof(DownloadUploadAnonymous))]
-  public class DownloadUploadAnonymousTestsCollection : ICollectionFixture<AnonymousTestContext> { }
+namespace MegaNZDotnet.Tests;
 
-  [Collection(nameof(DownloadUploadAnonymous))]
-  public class DownloadUploadAnonymous : DownloadUpload
+[CollectionDefinition(nameof(DownloadUploadAnonymous))]
+public class DownloadUploadAnonymousTestsCollection : ICollectionFixture<AnonymousTestContext> { }
+
+[Collection(nameof(DownloadUploadAnonymous))]
+public class DownloadUploadAnonymous : DownloadUpload
+{
+  public DownloadUploadAnonymous(AnonymousTestContext context, ITestOutputHelper testOutputHelper)
+    : base(context, testOutputHelper)
   {
-    public DownloadUploadAnonymous(AnonymousTestContext context, ITestOutputHelper testOutputHelper)
-      : base(context, testOutputHelper)
-    {
-    }
   }
 }

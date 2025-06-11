@@ -1,19 +1,18 @@
-using System;
+﻿using System;
 
-namespace CG.Web.MegaNZDotnet.Tests
+namespace MegaNZDotnet.Tests;
+
+internal class SyncProgress<T> : IProgress<T>
 {
-  internal class SyncProgress<T> : IProgress<T>
+  private readonly Action<T> _callback;
+
+  public SyncProgress(Action<T> callback)
   {
-    private readonly Action<T> _callback;
+    _callback = callback;
+  }
 
-    public SyncProgress(Action<T> callback)
-    {
-      _callback = callback;
-    }
-
-    public void Report(T value)
-    {
-      _callback(value);
-    }
+  public void Report(T value)
+  {
+    _callback(value);
   }
 }

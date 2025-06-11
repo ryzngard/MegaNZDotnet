@@ -1,15 +1,14 @@
-namespace CG.Web.MegaNZDotnet.Tests
-{
-  using System;
-  using Xunit;
+﻿namespace MegaNZDotnet.Tests;
 
-  public class Options_Tests
+using System;
+using Xunit;
+
+public class Options_Tests
+{
+  [Fact]
+  public void ReportProgressChunkSize_LowerThan_BufferSize_Throws()
   {
-    [Fact]
-    public void ReportProgressChunkSize_LowerThan_BufferSize_Throws()
-    {
-      var bufferSize = new Options().BufferSize;
-      Assert.Throws<ArgumentException>("reportProgressChunkSize", () => new Options(reportProgressChunkSize: bufferSize - 1));
-    }
+    var bufferSize = new Options().BufferSize;
+    Assert.Throws<ArgumentException>("reportProgressChunkSize", () => new Options(reportProgressChunkSize: bufferSize - 1));
   }
 }

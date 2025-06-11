@@ -1,163 +1,162 @@
-namespace CG.Web.MegaNZDotnet.Serialization
+﻿using System;
+using System.IO;
+using System.Runtime.Serialization;
+using MegaNZDotnet.Cryptography;
+using Newtonsoft.Json;
+
+namespace MegaNZDotnet.Serialization;
+
+internal class Attributes
 {
-  using System;
-  using System.IO;
-  using System.Runtime.Serialization;
-  using DamienG.Security.Cryptography;
-  using Newtonsoft.Json;
+  private const int CrcArrayLength = 4;
+  private const int CrcSize = sizeof(uint) * CrcArrayLength;
+  private const int FingerprintMaxSize = CrcSize + 1 + sizeof(long);
+  private const int MaxFull = 8192;
+  private const uint CryptoPPCRC32Polynomial = 0xEDB88320;
 
-  internal class Attributes
+  [JsonConstructor]
+  private Attributes()
   {
-    private const int CrcArrayLength = 4;
-    private const int CrcSize = sizeof(uint) * CrcArrayLength;
-    private const int FingerprintMaxSize = CrcSize + 1 + sizeof(long);
-    private const int MaxFull = 8192;
-    private const uint CryptoPPCRC32Polynomial = 0xEDB88320;
+  }
 
-    [JsonConstructor]
-    private Attributes()
+  public Attributes(string name)
+  {
+    Name = name;
+  }
+
+  public Attributes(string name, Attributes originalAttributes)
+  {
+    Name = name;
+    SerializedFingerprint = originalAttributes.SerializedFingerprint;
+  }
+
+  public Attributes(string name, Stream stream, DateTime? modificationDate = null)
+  {
+    Name = name;
+
+    if (modificationDate.HasValue)
     {
+      var fingerprintBuffer = new byte[FingerprintMaxSize];
+
+      var crc = ComputeCrc(stream);
+      Buffer.BlockCopy(crc, 0, fingerprintBuffer, 0, CrcSize);
+
+      var serializedModificationDate = modificationDate.Value.ToEpoch().SerializeToBytes();
+      Buffer.BlockCopy(serializedModificationDate, 0, fingerprintBuffer, CrcSize, serializedModificationDate.Length);
+
+      Array.Resize(ref fingerprintBuffer, fingerprintBuffer.Length - (sizeof(long) + 1) + serializedModificationDate.Length);
+
+      SerializedFingerprint = fingerprintBuffer.ToBase64();
     }
+  }
 
-    public Attributes(string name)
+  [JsonProperty("n")]
+  public string Name { get; set; }
+
+  [JsonProperty("c", DefaultValueHandling = DefaultValueHandling.Ignore)]
+  public string SerializedFingerprint { get; set; }
+
+  [JsonIgnore]
+  public DateTime? ModificationDate
+  {
+    get; private set;
+  }
+
+  [OnDeserialized]
+  public void OnDeserialized(StreamingContext context)
+  {
+    if (SerializedFingerprint != null)
     {
-      Name = name;
+      var fingerprintBytes = SerializedFingerprint.FromBase64();
+      ModificationDate = fingerprintBytes.DeserializeToLong(CrcSize, fingerprintBytes.Length - CrcSize).ToDateTime();
     }
+  }
 
-    public Attributes(string name, Attributes originalAttributes)
+  private uint[] ComputeCrc(Stream stream)
+  {
+    // From https://github.com/meganz/sdk/blob/d4b462efc702a9c645e90c202b57e14da3de3501/src/filefingerprint.cpp
+
+    stream.Seek(0, SeekOrigin.Begin);
+
+    var crc = new uint[CrcArrayLength];
+    var newCrcBuffer = new byte[CrcSize];
+    uint crcVal = 0;
+
+    if (stream.Length <= CrcSize)
     {
-      Name = name;
-      SerializedFingerprint = originalAttributes.SerializedFingerprint;
-    }
-
-    public Attributes(string name, Stream stream, DateTime? modificationDate = null)
-    {
-      Name = name;
-
-      if (modificationDate.HasValue)
+      // tiny file: read verbatim, NUL pad
+      if (0 != stream.Read(newCrcBuffer, 0, (int)stream.Length))
       {
-        var fingerprintBuffer = new byte[FingerprintMaxSize];
-
-        var crc = ComputeCrc(stream);
-        Buffer.BlockCopy(crc, 0, fingerprintBuffer, 0, CrcSize);
-
-        var serializedModificationDate = modificationDate.Value.ToEpoch().SerializeToBytes();
-        Buffer.BlockCopy(serializedModificationDate, 0, fingerprintBuffer, CrcSize, serializedModificationDate.Length);
-
-        Array.Resize(ref fingerprintBuffer, fingerprintBuffer.Length - (sizeof(long) + 1) + serializedModificationDate.Length);
-
-        SerializedFingerprint = fingerprintBuffer.ToBase64();
+        Buffer.BlockCopy(newCrcBuffer, 0, crc, 0, newCrcBuffer.Length);
       }
     }
-
-    [JsonProperty("n")]
-    public string Name { get; set; }
-
-    [JsonProperty("c", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string SerializedFingerprint { get; set; }
-
-    [JsonIgnore]
-    public DateTime? ModificationDate
+    else if (stream.Length <= MaxFull)
     {
-      get; private set;
-    }
-
-    [OnDeserialized]
-    public void OnDeserialized(StreamingContext context)
-    {
-      if (SerializedFingerprint != null)
+      // small file: full coverage, four full CRC32s
+      var fileBuffer = new byte[stream.Length];
+      var read = 0;
+      while ((read += stream.Read(fileBuffer, read, (int)stream.Length - read)) < stream.Length)
       {
-        var fingerprintBytes = SerializedFingerprint.FromBase64();
-        ModificationDate = fingerprintBytes.DeserializeToLong(CrcSize, fingerprintBytes.Length - CrcSize).ToDateTime();
+        ;
       }
-    }
 
-    private uint[] ComputeCrc(Stream stream)
-    {
-      // From https://github.com/meganz/sdk/blob/d4b462efc702a9c645e90c202b57e14da3de3501/src/filefingerprint.cpp
-
-      stream.Seek(0, SeekOrigin.Begin);
-
-      var crc = new uint[CrcArrayLength];
-      var newCrcBuffer = new byte[CrcSize];
-      uint crcVal = 0;
-
-      if (stream.Length <= CrcSize)
+      for (var i = 0; i < crc.Length; i++)
       {
-        // tiny file: read verbatim, NUL pad
-        if (0 != stream.Read(newCrcBuffer, 0, (int)stream.Length))
+        var begin = (int)(i * stream.Length / crc.Length);
+        var end = (int)((i + 1) * stream.Length / crc.Length);
+
+        using (var crc32Hasher = new Crc32(CryptoPPCRC32Polynomial, Crc32.DefaultSeed))
         {
-          Buffer.BlockCopy(newCrcBuffer, 0, crc, 0, newCrcBuffer.Length);
+          var crcValBytes = crc32Hasher.ComputeHash(fileBuffer, begin, end - begin);
+          crcVal = BitConverter.ToUInt32(crcValBytes, 0);
         }
+
+        crc[i] = crcVal;
       }
-      else if (stream.Length <= MaxFull)
+    }
+    else
+    {
+      // large file: sparse coverage, four sparse CRC32s
+      var block = new byte[4 * CrcSize];
+      var blocks = (uint)(MaxFull / (block.Length * CrcArrayLength));
+      long current = 0;
+
+      for (uint i = 0; i < CrcArrayLength; i++)
       {
-        // small file: full coverage, four full CRC32s
-        var fileBuffer = new byte[stream.Length];
-        var read = 0;
-        while ((read += stream.Read(fileBuffer, read, (int)stream.Length - read)) < stream.Length)
-        {
-          ;
-        }
+        byte[] crc32ValBytes = null;
 
-        for (var i = 0; i < crc.Length; i++)
+        var seed = Crc32.DefaultSeed;
+        for (uint j = 0; j < blocks; j++)
         {
-          var begin = (int)(i * stream.Length / crc.Length);
-          var end = (int)((i + 1) * stream.Length / crc.Length);
+          var offset = (stream.Length - block.Length) * (i * blocks + j) / (CrcArrayLength * blocks - 1);
 
-          using (var crc32Hasher = new Crc32(CryptoPPCRC32Polynomial, Crc32.DefaultSeed))
+          stream.Seek(offset - current, SeekOrigin.Current);
+          current += offset - current;
+
+          var blockWritten = stream.Read(block, 0, block.Length);
+          current += blockWritten;
+
+          using (var crc32Hasher = new Crc32(CryptoPPCRC32Polynomial, seed))
           {
-            var crcValBytes = crc32Hasher.ComputeHash(fileBuffer, begin, end - begin);
-            crcVal = BitConverter.ToUInt32(crcValBytes, 0);
-          }
-
-          crc[i] = crcVal;
-        }
-      }
-      else
-      {
-        // large file: sparse coverage, four sparse CRC32s
-        var block = new byte[4 * CrcSize];
-        var blocks = (uint)(MaxFull / (block.Length * CrcArrayLength));
-        long current = 0;
-
-        for (uint i = 0; i < CrcArrayLength; i++)
-        {
-          byte[] crc32ValBytes = null;
-
-          var seed = Crc32.DefaultSeed;
-          for (uint j = 0; j < blocks; j++)
-          {
-            var offset = (stream.Length - block.Length) * (i * blocks + j) / (CrcArrayLength * blocks - 1);
-
-            stream.Seek(offset - current, SeekOrigin.Current);
-            current += (offset - current);
-
-            var blockWritten = stream.Read(block, 0, block.Length);
-            current += blockWritten;
-
-            using (var crc32Hasher = new Crc32(CryptoPPCRC32Polynomial, seed))
+            crc32ValBytes = crc32Hasher.ComputeHash(block, 0, blockWritten);
+            var seedBytes = new byte[crc32ValBytes.Length];
+            crc32ValBytes.CopyTo(seedBytes, 0);
+            if (BitConverter.IsLittleEndian)
             {
-              crc32ValBytes = crc32Hasher.ComputeHash(block, 0, blockWritten);
-              var seedBytes = new byte[crc32ValBytes.Length];
-              crc32ValBytes.CopyTo(seedBytes, 0);
-              if (BitConverter.IsLittleEndian)
-              {
-                Array.Reverse(seedBytes);
-              }
-
-              seed = BitConverter.ToUInt32(seedBytes, 0);
-              seed = ~seed;
+              Array.Reverse(seedBytes);
             }
+
+            seed = BitConverter.ToUInt32(seedBytes, 0);
+            seed = ~seed;
           }
-
-          crcVal = BitConverter.ToUInt32(crc32ValBytes, 0);
-
-          crc[i] = crcVal;
         }
-      }
 
-      return crc;
+        crcVal = BitConverter.ToUInt32(crc32ValBytes, 0);
+
+        crc[i] = crcVal;
+      }
     }
+
+    return crc;
   }
 }

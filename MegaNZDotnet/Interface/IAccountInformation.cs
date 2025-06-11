@@ -1,24 +1,23 @@
-namespace CG.Web.MegaNZDotnet
+﻿namespace MegaNZDotnet.Interface;
+
+using System.Collections.Generic;
+
+public interface IAccountInformation
 {
-  using System.Collections.Generic;
+  long TotalQuota { get; }
 
-  public interface IAccountInformation
-  {
-    long TotalQuota { get; }
+  long UsedQuota { get; }
 
-    long UsedQuota { get; }
+  IEnumerable<IStorageMetrics> Metrics { get; }
+}
 
-    IEnumerable<IStorageMetrics> Metrics { get; }
-  }
+public interface IStorageMetrics
+{
+  string NodeId { get; }
 
-  public interface IStorageMetrics
-  {
-    string NodeId { get; }
+  long BytesUsed { get; }
 
-    long BytesUsed { get; }
+  long FilesCount { get; }
 
-    long FilesCount { get; }
-
-    long FoldersCount { get; }
-  }
+  long FoldersCount { get; }
 }

@@ -1,10 +1,9 @@
-namespace CG.Web.MegaNZDotnet.Serialization
+﻿namespace MegaNZDotnet.Serialization;
+
+internal class LogoutRequest : RequestBase
 {
-  internal class LogoutRequest : RequestBase
+  public LogoutRequest()
+    : base("sml")
   {
-    public LogoutRequest()
-      : base("sml")
-    {
-    }
   }
 }
