@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net60</TargetFramework>
-    <RootNamespace>CG.Web.MegaNZDotnet.Tests</RootNamespace>
+    <RootNamespace>MegaNZDotnet.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

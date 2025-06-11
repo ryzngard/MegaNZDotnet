@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="key.snk" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="MegaApiClient.Tests/MegaNZDotnet.Tests.csproj" />
+  <Project Path="MegaApiClient/MegaNZDotnet.csproj" />
+</Solution>
