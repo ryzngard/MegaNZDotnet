@@ -20,4 +20,4 @@
 3. 
 
 
-**MegaApiClient Version**:
+**MegaNZDotnet Version**:

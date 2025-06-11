@@ -3,7 +3,7 @@ uid: faq
 ---
 
 ### How can I download a file into a specific location?
-You can use a stream with the <xref:CG.Web.MegaApiClient.MegaApiClient.Download*> method to control the destination of your download
+You can use a stream with the <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.Download*> method to control the destination of your download
 ```csharp
 var destination = @"SubFolder\MyFile.jpg";
 using (var stream = client.Download(node))
@@ -18,12 +18,12 @@ using (var stream = client.Download(node))
 
 ### How can I retrieve progression during download/upload?
 You have several options:
-- Use async methods like <xref:CG.Web.MegaApiClient.MegaApiClient.DownloadAsync*> / <xref:CG.Web.MegaApiClient.MegaApiClient.UploadAsync*>
+- Use async methods like <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.DownloadAsync*> / <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.UploadAsync*>
 
 ```csharp
 async void Main()
 {
-  var client = new MegaApiClient();
+  var client = new MegaNZDotnet();
   client.LoginAnonymous();
 
   Uri fileLink = new Uri("https://mega.nz/#!bkwkHC7D!AWJuto8_fhleAI2WG0RvACtKkL_s9tAtvBXXDUp2bQk");
@@ -37,7 +37,7 @@ async void Main()
 ```
 
 
-- Use the methods <xref:CG.Web.MegaApiClient.MegaApiClient.Download*> / <xref:CG.Web.MegaApiClient.MegaApiClient.Upload*> with a custom stream implementation to retrieve progression
+- Use the methods <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.Download*> / <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.Upload*> with a custom stream implementation to retrieve progression
 
 ```csharp
 // Upload
@@ -125,17 +125,17 @@ public class ProgressionStream : Stream
 
 
 ### How can I control download/upload speed?
-You can use a custom Stream implementation with <xref:CG.Web.MegaApiClient.MegaApiClient.Download*> / <xref:CG.Web.MegaApiClient.MegaApiClient.Upload*> methods.
+You can use a custom Stream implementation with <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.Download*> / <xref:CG.Web.MegaNZDotnet.MegaNZDotnet.Upload*> methods.
 Take a look on [ThrottledStream](https://github.com/duplicati/duplicati/blob/master/Duplicati/Library/Utility/ThrottledStream.cs) implementation from Duplicati project.
 
 
-### How can I customize MegaApiClient options (application key, buffers)?
-When creating the MegaApiClient, you can pass a custom configuration class called <xref:CG.Web.MegaApiClient.Options>.
+### How can I customize MegaNZDotnet options (application key, buffers)?
+When creating the MegaNZDotnet, you can pass a custom configuration class called <xref:CG.Web.MegaNZDotnet.Options>.
 
 
 ### How can I fix UWP error during login ?
 UWP compiler has some restriction and you can face some unexpected exceptions during login.
-Take a look on [GitHub issue #69](https://github.com/gpailler/MegaApiClient/issues/69#issuecomment-326811805) for details.
+Take a look on [GitHub issue #69](https://github.com/gpailler/MegaNZDotnet/issues/69#issuecomment-326811805) for details.
 
 
 ### How can I use this library when I have a proxy with authentication?

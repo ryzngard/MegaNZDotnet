@@ -1,15 +1,15 @@
-# **MegaApiClient**'s documentation
+# **MegaNZDotnet**'s documentation
 
-**MegaApiClient is a C# .Net library to access [http://mega.co.nz](http://mega.co.nz) / [http://mega.nz](http://mega.nz) cloud storage and file hosting service.**
+**MegaNZDotnet is a C# .Net library to access [http://mega.co.nz](http://mega.co.nz) / [http://mega.nz](http://mega.nz) cloud storage and file hosting service.**
 
 
 #### Documentation
 
-Getting started with MegaApiClient
+Getting started with MegaNZDotnet
   * [Installation](xref:installation)
   * [Code samples](xref:samples)
   * [FAQ](xref:faq)
-  * [API](xref:CG.Web.MegaApiClient.MegaApiClient) documentation
+  * [API](xref:CG.Web.MegaNZDotnet.MegaNZDotnet) documentation
 
 
 #### Compatibility
@@ -40,12 +40,12 @@ Here is the list of all supported implementations:
 ```
 <linker>
     <!-- the name of the assembly -->
-    <assembly fullname="MegaApiClient">
+    <assembly fullname="MegaNZDotnet">
         <!-- excludes all namespaces and classes recursively under MyNamespace -->
-        <type fullname="CG.Web.MegaApiClient.*" preserve="all"/>
+        <type fullname="CG.Web.MegaNZDotnet.*" preserve="all"/>
     </assembly>
 </linker>
 ```
 ---
 
-MegaApiClient source is available on [GitHub](https://github.com/gpailler/MegaApiClient) and is released under [MIT](https://choosealicense.com/licenses/mit/) license.
+MegaNZDotnet source is available on [GitHub](https://github.com/gpailler/MegaNZDotnet) and is released under [MIT](https://choosealicense.com/licenses/mit/) license.

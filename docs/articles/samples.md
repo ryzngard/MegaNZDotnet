@@ -4,11 +4,11 @@ uid: samples
 
 ### List all files / folders on your Mega account
 ```csharp
-using CG.Web.MegaApiClient;
+using CG.Web.MegaNZDotnet;
 
 void Main()
 {
-  MegaApiClient client = new MegaApiClient();
+  MegaNZDotnet client = new MegaNZDotnet();
   client.Login("username@domain.com", "passw0rd");
 
   // GetNodes retrieves all files/folders metadata from Mega
@@ -39,11 +39,11 @@ void DisplayNodesRecursive(IEnumerable<INode> nodes, INode parent, int level = 0
 
 ### Download file from a Mega link
 ```csharp
-using CG.Web.MegaApiClient;
+using CG.Web.MegaNZDotnet;
 
 void Main()
 {
-  MegaApiClient client = new MegaApiClient();
+  MegaNZDotnet client = new MegaNZDotnet();
   client.LoginAnonymous();
 
   Uri fileLink = new Uri("https://mega.nz/file/W0UAgJaK#XOYyTETrIy8daz3_dw3fdh6Hh8EFEdrnbyoop1r9R6g");
@@ -59,11 +59,11 @@ void Main()
 
 ### Download folder content from a Mega link
 ```csharp
-using CG.Web.MegaApiClient;
+using CG.Web.MegaNZDotnet;
 
 void Main()
 {
-  MegaApiClient client = new MegaApiClient();
+  MegaNZDotnet client = new MegaNZDotnet();
   client.LoginAnonymous();
 
   Uri folderLink = new Uri("https://mega.nz/folder/e4diDZ7T#iJnegBO_m6OXBQp27lHCrg");
@@ -96,11 +96,11 @@ string GetParents(INode node, IEnumerable<INode> nodes)
 
 ### Upload a file to your Mega account and retrieve public download link
 ```csharp
-using CG.Web.MegaApiClient;
+using CG.Web.MegaNZDotnet;
 
 void Main()
 {
-  MegaApiClient client = new MegaApiClient();
+  MegaNZDotnet client = new MegaNZDotnet();
   client.Login("username@domain.com", "passw0rd");
 
   IEnumerable<INode> nodes = client.GetNodes();
